@@ -13,7 +13,6 @@ interface GalleryItem {
   createdAt: string;
   mood: string;
   format: string;
-  liked: boolean;
 }
 
 export function Gallery() {
@@ -25,8 +24,7 @@ export function Gallery() {
       keywords: ["study", "tips", "education", "bright"],
       createdAt: "2024-01-15",
       mood: "energetic",
-      format: "horizontal",
-      liked: true
+      format: "horizontal"
     },
     {
       id: "2", 
@@ -35,8 +33,7 @@ export function Gallery() {
       keywords: ["fitness", "muscle", "workout", "motivation"],
       createdAt: "2024-01-14",
       mood: "motivational", 
-      format: "both",
-      liked: false
+      format: "both"
     },
     {
       id: "3",
@@ -45,8 +42,7 @@ export function Gallery() {
       keywords: ["cooking", "food", "secrets", "minimalist"],
       createdAt: "2024-01-13",
       mood: "minimalist",
-      format: "vertical",
-      liked: true
+      format: "vertical"
     }
   ]);
 
@@ -74,18 +70,6 @@ export function Gallery() {
     }
   };
 
-  const getMoodColor = (mood: string) => {
-    const moodColors = {
-      energetic: "bg-orange-500",
-      serious: "bg-blue-600", 
-      funny: "bg-yellow-500",
-      motivational: "bg-green-500",
-      dramatic: "bg-red-600",
-      minimalist: "bg-gray-500"
-    };
-    return moodColors[mood as keyof typeof moodColors] || "bg-gray-500";
-  };
-
   return (
     <div className="container max-w-6xl mx-auto px-4 py-8">
       <div className="mb-8">
@@ -95,7 +79,7 @@ export function Gallery() {
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {galleryItems.map((item) => (
           <Card key={item.id} className="glass-effect group hover:shadow-elegant transition-all duration-300 hover:scale-[1.02]">
             <CardContent className="p-0">
@@ -161,14 +145,19 @@ export function Gallery() {
               </div>
 
               <div className="p-3 space-y-2">
-                <p className="text-sm line-clamp-2">{item.prompt}</p>
+                <p className="text-sm line-clamp-2 font-medium">{item.prompt}</p>
                 
                 <div className="flex flex-wrap gap-1">
-                  {item.keywords.slice(0, 3).map((keyword) => (
+                  {item.keywords.slice(0, 2).map((keyword) => (
                     <span key={keyword} className="text-xs text-muted-foreground">
                       #{keyword}
                     </span>
                   ))}
+                  {item.keywords.length > 2 && (
+                    <span className="text-xs text-muted-foreground">
+                      +{item.keywords.length - 2}
+                    </span>
+                  )}
                 </div>
               </div>
             </CardContent>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Upload, Image, Wand2, Settings, AlignLeft, AlignCenter, AlignRight, Sparkles } from "lucide-react";
+import { Upload, Image, Wand2, Settings, AlignLeft, AlignCenter, AlignRight, Sparkles, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,14 +20,18 @@ const moodOptions = [
 ];
 
 const colorThemes = [
-  { value: "bright", label: "Bright & Eye-Catching", gradient: "bg-gradient-to-r from-pink-500 to-yellow-500", preview: "from-pink-500 to-yellow-500" },
-  { value: "dark", label: "Dark & Cinematic", gradient: "bg-gradient-to-r from-gray-900 to-purple-900", preview: "from-gray-900 to-purple-900" },
-  { value: "pastel", label: "Pastel", gradient: "bg-gradient-to-r from-pink-200 to-blue-200", preview: "from-pink-200 to-blue-200" },
-  { value: "brand", label: "Brand Colors", gradient: "bg-gradient-to-r from-purple-600 to-blue-600", preview: "from-purple-600 to-blue-600" },
-  { value: "sunset", label: "Sunset Vibes", gradient: "bg-gradient-to-r from-orange-400 to-red-500", preview: "from-orange-400 to-red-500" },
-  { value: "ocean", label: "Ocean Blues", gradient: "bg-gradient-to-r from-blue-400 to-teal-500", preview: "from-blue-400 to-teal-500" },
-  { value: "forest", label: "Nature Green", gradient: "bg-gradient-to-r from-green-400 to-emerald-600", preview: "from-green-400 to-emerald-600" },
-  { value: "neon", label: "Neon Glow", gradient: "bg-gradient-to-r from-violet-500 to-purple-600", preview: "from-violet-500 to-purple-600" }
+  { value: "bright", label: "Bright & Eye-Catching", preview: "from-pink-500 to-yellow-500" },
+  { value: "dark", label: "Dark & Cinematic", preview: "from-gray-900 to-purple-900" },
+  { value: "pastel", label: "Pastel Soft", preview: "from-pink-200 to-blue-200" },
+  { value: "brand", label: "Brand Colors", preview: "from-purple-600 to-blue-600" },
+  { value: "sunset", label: "Sunset Vibes", preview: "from-orange-400 to-red-500" },
+  { value: "ocean", label: "Ocean Blues", preview: "from-blue-400 to-teal-500" },
+  { value: "forest", label: "Nature Green", preview: "from-green-400 to-emerald-600" },
+  { value: "neon", label: "Neon Glow", preview: "from-violet-500 to-purple-600" },
+  { value: "monochrome", label: "Monochrome", preview: "from-gray-800 to-gray-400" },
+  { value: "fire", label: "Fire Red", preview: "from-red-600 to-orange-500" },
+  { value: "ice", label: "Ice Blue", preview: "from-cyan-400 to-blue-600" },
+  { value: "gold", label: "Golden Hour", preview: "from-yellow-400 to-orange-600" }
 ];
 
 const placementOptions = [
@@ -45,7 +49,10 @@ export function ThumbnailGenerator() {
     mood: "",
     placement: "",
     colorTheme: "",
-    format: "horizontal"
+    format: "horizontal",
+    style: "",
+    textSize: "medium",
+    effects: ""
   });
   
   const [imagePreview, setImagePreview] = useState<string>("");
@@ -72,13 +79,34 @@ export function ThumbnailGenerator() {
     setFormData(prev => ({ ...prev, imageUrl: url, image: null }));
   };
 
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    // Clear the other input when switching tabs
+    if (value === "upload") {
+      setFormData(prev => ({ ...prev, imageUrl: "" }));
+      if (formData.image) {
+        const url = URL.createObjectURL(formData.image);
+        setImagePreview(url);
+      } else {
+        setImagePreview("");
+      }
+    } else {
+      setFormData(prev => ({ ...prev, image: null }));
+      if (formData.imageUrl) {
+        setImagePreview(formData.imageUrl);
+      } else {
+        setImagePreview("");
+      }
+    }
+  };
+
   const handleGenerate = () => {
     console.log("Generating thumbnail with:", formData);
     // Here you would typically call your AI generation API
   };
 
   return (
-    <div className="container max-w-6xl mx-auto px-4 py-8">
+    <div className="container max-w-7xl mx-auto px-4 py-8">
       <div className="grid lg:grid-cols-2 gap-8">
         {/* Left Column - Form */}
         <div className="space-y-6">
@@ -90,7 +118,7 @@ export function ThumbnailGenerator() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <Tabs value={activeTab} onValueChange={handleTabChange}>
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="upload">Upload File</TabsTrigger>
                   <TabsTrigger value="url">Image URL</TabsTrigger>
@@ -191,7 +219,7 @@ export function ThumbnailGenerator() {
                         onClick={() => setFormData(prev => ({ ...prev, placement: placement.value }))}
                         className="flex-col gap-2 h-auto p-3 transition-smooth"
                       >
-                        <IconComponent className="h-4 w-4" />
+                        <IconComponent className="h-5 w-5" />
                         <span className="text-xs">{placement.label}</span>
                       </Button>
                     );
@@ -207,15 +235,13 @@ export function ThumbnailGenerator() {
                       <Settings className="h-4 w-4" />
                       Advanced Options
                     </span>
-                    <div className={`transition-transform ${advancedMode ? 'rotate-180' : ''}`}>
-                      ▼
-                    </div>
+                    <ChevronDown className={`h-4 w-4 transition-transform ${advancedMode ? 'rotate-180' : ''}`} />
                   </Button>
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-4 mt-4">
                   <div className="space-y-3">
                     <Label>Color Theme</Label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
                       {colorThemes.map((theme) => (
                         <Button
                           key={theme.value}
@@ -223,11 +249,61 @@ export function ThumbnailGenerator() {
                           onClick={() => setFormData(prev => ({ ...prev, colorTheme: theme.value }))}
                           className="justify-start h-auto p-3 transition-smooth"
                         >
-                          <div className={`w-6 h-4 rounded bg-gradient-to-r ${theme.preview} mr-3 border border-border`}></div>
-                          <span className="text-xs">{theme.label}</span>
+                          <div className={`w-8 h-6 rounded bg-gradient-to-r ${theme.preview} mr-3 border border-border shadow-sm`}></div>
+                          <span className="text-sm">{theme.label}</span>
                         </Button>
                       ))}
                     </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label htmlFor="style">Style Keywords</Label>
+                    <Input
+                      id="style"
+                      placeholder="e.g., bold, modern, vintage"
+                      value={formData.style}
+                      onChange={(e) => setFormData(prev => ({ ...prev, style: e.target.value }))}
+                      className="transition-smooth"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Additional style descriptors
+                    </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label>Text Size</Label>
+                    <RadioGroup
+                      value={formData.textSize}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, textSize: value }))}
+                      className="flex gap-4"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="small" id="small" />
+                        <Label htmlFor="small" className="text-sm">Small</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="medium" id="medium" />
+                        <Label htmlFor="medium" className="text-sm">Medium</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="large" id="large" />
+                        <Label htmlFor="large" className="text-sm">Large</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label htmlFor="effects">Special Effects</Label>
+                    <Input
+                      id="effects"
+                      placeholder="e.g., glow, shadow, 3D"
+                      value={formData.effects}
+                      onChange={(e) => setFormData(prev => ({ ...prev, effects: e.target.value }))}
+                      className="transition-smooth"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Visual effects to apply
+                    </p>
                   </div>
                 </CollapsibleContent>
               </Collapsible>
@@ -256,9 +332,18 @@ export function ThumbnailGenerator() {
             <CardContent>
               <div className="thumbnail-preview h-64 animate-fade-in">
                 {formData.title ? (
-                  <div className="text-center">
+                  <div className="text-center space-y-3">
                     <div className="text-lg font-bold mb-2">{formData.title}</div>
-                    <Badge variant="secondary">{formData.mood || "Select mood"}</Badge>
+                    {formData.mood && <Badge variant="secondary">{formData.mood}</Badge>}
+                    {imagePreview && (
+                      <div className="mt-4">
+                        <img
+                          src={imagePreview}
+                          alt="Preview"
+                          className="w-16 h-16 object-cover rounded-lg mx-auto opacity-50"
+                        />
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="text-center">
