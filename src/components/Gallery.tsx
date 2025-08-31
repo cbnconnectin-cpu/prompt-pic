@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download, Share2, Eye, Heart, Calendar, Tag } from "lucide-react";
+import { Download, Share2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -158,40 +158,17 @@ export function Gallery() {
                     {item.format === "horizontal" ? "16:9" : item.format === "vertical" ? "9:16" : "Both"}
                   </Badge>
                 </div>
-
-                {/* Like button */}
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className={`absolute top-2 left-2 ${item.liked ? 'text-red-500' : 'text-white'}`}
-                >
-                  <Heart className={`h-4 w-4 ${item.liked ? 'fill-current' : ''}`} />
-                </Button>
               </div>
 
-              <div className="p-4 space-y-3">
-                <div className="flex items-start justify-between gap-2">
-                  <p className="text-sm line-clamp-2 flex-1">{item.prompt}</p>
-                  <div className={`w-3 h-3 rounded-full ${getMoodColor(item.mood)} flex-shrink-0 mt-0.5`} />
-                </div>
-
+              <div className="p-3 space-y-2">
+                <p className="text-sm line-clamp-2">{item.prompt}</p>
+                
                 <div className="flex flex-wrap gap-1">
-                  {item.keywords.map((keyword) => (
-                    <Badge key={keyword} variant="outline" className="text-xs">
-                      <Tag className="h-3 w-3 mr-1" />
-                      {keyword}
-                    </Badge>
+                  {item.keywords.slice(0, 3).map((keyword) => (
+                    <span key={keyword} className="text-xs text-muted-foreground">
+                      #{keyword}
+                    </span>
                   ))}
-                </div>
-
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    {new Date(item.createdAt).toLocaleDateString()}
-                  </div>
-                  <Badge variant="secondary" className="capitalize">
-                    {item.mood}
-                  </Badge>
                 </div>
               </div>
             </CardContent>
